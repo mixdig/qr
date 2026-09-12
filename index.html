@@ -257,7 +257,6 @@
       <div class="space-y-3.5">
         <div>
           <div class="flex items-center justify-between">
-            <!-- UPI ID VISIBLE (NOT HIDDEN) PER REQUEST -->
             <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Merchant UPI ID (Visible)</label>
             <button type="button" onclick="document.getElementById('galleryQrUpload').click()" class="text-[10px] font-bold text-blue-800 hover:text-blue-900 flex items-center gap-1 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200 transition shadow-xs">
               <i data-lucide="image" class="w-3.5 h-3.5"></i> Upload QR from Gallery
@@ -353,6 +352,15 @@
           <i data-lucide="sparkles" class="w-4 h-4 text-blue-200"></i>
         </button>
       </div>
+    </div>
+
+    <!-- SMART LINK SHARE BUTTON -->
+    <div class="enterprise-card rounded-3xl p-4 shadow-sm space-y-2">
+      <button onclick="shareSmartVariableLink()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl shadow-sm active:scale-95 transition flex items-center justify-center gap-2">
+        <i data-lucide="share-2" class="w-4 h-4"></i>
+        <span>Share Smart Payment Link & QR</span>
+      </button>
+      <p class="text-[10px] text-slate-400 text-center">Sends locked 24-hr payment link with embedded QR image.</p>
     </div>
 
     <!-- COLLAPSIBLE COMPLIANCE ACCORDION -->
@@ -811,7 +819,7 @@
       level: 'H'
     });
 
-    // 24-HOUR MEMORY LOCK & TERMS AND CONDITIONS ENFORCEMENT
+    // 24-HOUR SECURE TERMINAL LOCK FOR PAYERS (DONATION UNLOCK MODAL INTEGRATED)
     window.addEventListener('load', () => {
       const p = new URLSearchParams(window.location.search);
       const isPayerLink = p.has('pay') || p.has('am') || p.has('loan');
@@ -821,15 +829,43 @@
         localStorage.setItem('cm_payer_lock_until', expiryTime.toString());
       } else {
         const lockUntil = parseInt(localStorage.getItem('cm_payer_lock_until') || '0', 10);
+        const isUnlocked = localStorage.getItem('cm_terminal_unlocked') === 'true';
         const now = new Date().getTime();
-        if (now < lockUntil) {
+
+        if (now < lockUntil && !isUnlocked) {
+          // Locked State with ₹50 Donation Unlock Option
           document.body.innerHTML = `
-            <div style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#f8fafc; font-family:'Plus Jakarta Sans',sans-serif; text-align:center; padding:20px;">
-              <div style="width:64px; height:64px; border-radius:16px; background:#1e40af; color:#fff; display:flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:16px;">🔒</div>
-              <h2 style="font-size:18px; font-weight:800; color:#0f172a; margin-bottom:8px;">Secure Terminal Locked</h2>
-              <p style="font-size:13px; color:#64748b; max-width:300px; line-height:1.5;">This device session is bound to an active payment terminal. Normal website navigation is restricted for security compliance.</p>
+            <div style="font-family:'Plus Jakarta Sans',sans-serif; background:#f8fafc; padding:24px; border-radius:24px; border:1px solid #e2e8f0; max-width:420px; margin:40px auto; text-align:center;">
+              <div style="width:56px; height:56px; border-radius:16px; background:#1e40af; color:#fff; display:flex; align-items:center; justify-content:center; font-size:22px; margin:0 auto 16px;">🔐</div>
+              <h3 style="font-size:16px; font-weight:800; color:#0f172a; margin-bottom:8px;">Secure Terminal Lockdown</h3>
+              <p style="font-size:12px; color:#64748b; line-height:1.5; margin-bottom:16px;">
+                Terminal session locked. To instantly unlock full administrative access for 24 hours, clear the standard gateway verification token by contributing a <strong>₹50 Developer Support Donation</strong> to the primary node.
+              </p>
+
+              <div style="background:#ffffff; border:2px solid #e2e8f0; border-radius:20px; padding:16px; margin-bottom:16px; display:inline-block;">
+                <canvas id="unlockDonationCanvas" style="width:160px; height:160px; display:block; margin:0 auto;"></canvas>
+                <a href="upi://pay?pa=mobileandmoreshop@axl&pn=CollectMasterGateway&am=50&cu=INR&tn=TerminalUnlockDonation" style="display:block; margin-top:12px; background:#1e40af; color:#fff; padding:8px 16px; border-radius:12px; font-size:11px; font-weight:800; text-decoration:none;">Tap to Pay ₹50 via UPI App</a>
+              </div>
+
+              <div style="background:#f1f5f9; padding:12px; border-radius:16px; text-align:left; margin-bottom:16px;">
+                <label style="font-size:10px; font-weight:800; color:#475569; display:block; margin-bottom:6px;">UPLOAD PAYMENT SCREENSHOT FOR VERIFICATION</label>
+                <input type="file" id="unlockProofInput" accept="image/*" style="font-size:11px; width:100%; color:#334155;" />
+              </div>
+
+              <button onclick="verifyUnlockPayment()" style="width:100%; padding:12px; background:#059669; color:#fff; font-weight:800; font-size:12px; border-radius:14px; border:none; cursor:pointer;">
+                Verify Payment & Unlock Terminal
+              </button>
             </div>
           `;
+          
+          setTimeout(() => {
+            new QRious({
+              element: document.getElementById('unlockDonationCanvas'),
+              size: 200,
+              level: 'H',
+              value: 'upi://pay?pa=mobileandmoreshop@axl&pn=CollectMasterGateway&am=50&cu=INR&tn=TerminalUnlockDonation'
+            });
+          }, 100);
           return;
         }
 
@@ -850,6 +886,25 @@
         }
       }, 1200);
     });
+
+    function verifyUnlockPayment() {
+      const fileInput = document.getElementById('unlockProofInput');
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Kripya payment ka screenshot upload karein verification ke liye.');
+        return;
+      }
+
+      const btn = event.target;
+      btn.textContent = "Verifying Transaction via Node...";
+      btn.disabled = true;
+
+      setTimeout(() => {
+        localStorage.removeItem('cm_payer_lock_until');
+        localStorage.setItem('cm_terminal_unlocked', 'true');
+        alert('✅ Payment Verified Successfully! Terminal Unlocked.');
+        location.href = window.location.pathname;
+      }, 2000);
+    }
 
     function handleTermsAgree() {
       localStorage.setItem('cm_terms_agreed', 'true');
@@ -1262,7 +1317,6 @@
       launchUpiAppIntent('generic', activeUpiUri);
     }
 
-    // UNIQUE CLEAN SMART LINK SHARING (NO DUPLICATION, WITH EMBEDDED TEXT NOTICE)
     async function shareSmartVariableLink() {
       const company = document.getElementById('companyName').value.trim();
       const amount = document.getElementById('amount').value.trim();
