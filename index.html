@@ -109,7 +109,7 @@
     </div>
   </div>
 
-  <!-- TERMS & CONDITIONS AGREEMENT OVERLAY (FIRST TIME MERCHANT BOOT) -->
+  <!-- TERMS & CONDITIONS AGREEMENT OVERLAY -->
   <div id="termsAgreementModal" class="fixed inset-0 z-[60] bg-slate-950/80 hidden backdrop-blur-md flex items-center justify-center p-4">
     <div class="enterprise-card w-full max-w-lg max-h-[90vh] rounded-[32px] overflow-hidden shadow-2xl bg-white flex flex-col border border-slate-200 animate-in fade-in zoom-in-95">
       <div class="bg-blue-800 p-5 text-white text-center flex-shrink-0">
@@ -120,7 +120,6 @@
         <p class="text-[11px] text-blue-200 mt-0.5">Mandatory Legal Agreement under Digital Financial Services & NPCI Norms</p>
       </div>
 
-      <!-- Scrollable 10,000 Words Condition Agreement Text -->
       <div id="termsScrollContainer" class="p-6 overflow-y-auto text-xs text-slate-600 leading-relaxed space-y-4 flex-1 border-b border-slate-100">
         <h4 class="font-black text-slate-900 text-sm">SECTION 1: DEFINITIONS, INTERPRETATION AND SCOPE OF SERVICE</h4>
         <p>1.1 "Collect Master" ("Platform", "We", "Us", or "Our") operates as an advanced, enterprise-grade mobile web payment gateway and collection management terminal designed exclusively for licensed merchants, financial institutions, debt recovery agencies, and authorized field collection representatives ("Merchant", "User", "You").</p>
@@ -141,12 +140,11 @@
         <p>4.2 The Merchant agrees to fully indemnify, defend, and hold harmless Collect Master, its developers, affiliates, and licensors from any claims, regulatory penalties, legal disputes, or financial losses arising out of fraudulent collections or breach of this Agreement.</p>
 
         <h4 class="font-black text-slate-900 text-sm pt-3">SECTION 5: DISAGREEMENT AND TERMINATION PROTOCOL</h4>
-        <p>5.1 If you do not agree with any clause, sub-clause, or regulatory mandate contained within this 10,000-word Master Agreement, you must click "Disagree & Exit".</p>
+        <p>5.1 If you do not agree with any clause, sub-clause, or regulatory mandate contained within this Master Agreement, you must click "Disagree & Exit".</p>
         <p>5.2 Upon expressing disagreement, all merchant management capabilities, profile editing functions, and generation terminals will be permanently locked. The interface will restrict access and display the official Developer Support and Tip QR Code as compensation for developer resource allocation.</p>
         <p>5.3 This Agreement remains active across all browser sessions unless explicitly reset via authorized administrative overrides or software reinstallation.</p>
       </div>
 
-      <!-- Agreement Action Buttons -->
       <div class="p-5 bg-slate-50 flex items-center gap-3 flex-shrink-0">
         <button onclick="handleTermsDisagree()" class="flex-1 py-3.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-xs uppercase tracking-wider rounded-2xl border border-rose-200 transition active:scale-95">
           Disagree & Exit
@@ -158,7 +156,7 @@
     </div>
   </div>
 
-  <!-- DEVELOPER TIP / LOCKED STATE SCREEN (SHOWN IF AGREEMENT REJECTED) -->
+  <!-- DEVELOPER TIP / LOCKED STATE SCREEN -->
   <div id="disagreeLockedScreen" class="fixed inset-0 z-[70] bg-slate-950 hidden flex-col items-center justify-center p-6 text-center">
     <div class="enterprise-card max-w-sm w-full rounded-[32px] p-6 bg-white shadow-2xl space-y-4">
       <div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto border border-rose-100 shadow-xs">
@@ -284,7 +282,7 @@
             <div class="flex-1 space-y-1">
               <input type="file" id="logoFileInput" accept="image/*" class="hidden" onchange="handleLogoUpload(event)" />
               <div class="flex items-center gap-2">
-                <button type="button" onclick="document.getElementById('logoFileInput').click()" class="px-3 py-1.5 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-200 transition active:scale-95 shadow-xs flex items-center gap-1.5">
+                <button type="button" onclick="document.getElementById('logoFileInput').click()" class="px-3 py-1.5 bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-50 transition active:scale-95 shadow-xs flex items-center gap-1.5">
                   <i data-lucide="upload" class="w-3.5 h-3.5 text-blue-700"></i> Upload Logo
                 </button>
                 <button type="button" onclick="removeLogo()" class="px-2.5 py-1.5 text-rose-600 hover:bg-rose-50 text-xs font-bold rounded-xl transition">
@@ -357,15 +355,6 @@
           <i data-lucide="sparkles" class="w-4 h-4 text-blue-200"></i>
         </button>
       </div>
-    </div>
-
-    <!-- SMART LINK SHARE BUTTON -->
-    <div class="enterprise-card rounded-3xl p-4 shadow-sm space-y-2">
-      <button onclick="shareSmartVariableLink()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl shadow-sm active:scale-95 transition flex items-center justify-center gap-2">
-        <i data-lucide="share-2" class="w-4 h-4"></i>
-        <span>Share Smart Payment Link & QR</span>
-      </button>
-      <p class="text-[10px] text-slate-400 text-center">Sends locked 24-hr payment link with embedded QR image.</p>
     </div>
 
     <!-- COLLAPSIBLE COMPLIANCE ACCORDION -->
@@ -509,6 +498,19 @@
         </div>
       </div>
 
+      <div class="mt-3 px-2">
+        <details class="group bg-slate-50 border border-slate-200 rounded-2xl p-2.5 text-left transition">
+          <summary class="text-[11px] font-extrabold text-slate-700 cursor-pointer flex items-center justify-between outline-none">
+            <span class="flex items-center gap-1.5"><i data-lucide="scan-line" class="w-3.5 h-3.5 text-blue-800"></i> Scan / Enter Payer UPI ID Manually</span>
+            <span class="text-[10px] text-blue-600 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <div class="mt-2.5 pt-2 border-t border-slate-200 flex gap-2">
+            <input id="customPayerUpiInput" type="text" placeholder="payer@okaxis" class="flex-1 bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-blue-700" />
+            <button onclick="payWithCustomUpi()" class="px-3.5 py-2 bg-blue-800 text-white rounded-xl text-xs font-bold active:scale-95 transition">Pay</button>
+          </div>
+        </details>
+      </div>
+
       <div class="mt-4 flex items-center justify-center gap-2">
         <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Amount Due:</span>
         <span id="cardAmount" class="px-5 py-1.5 bg-blue-800 text-white font-black text-lg rounded-2xl shadow-xs">₹500</span>
@@ -571,6 +573,15 @@
           <i data-lucide="zap" class="w-4 h-4"></i> Any UPI App
         </button>
       </div>
+    </div>
+
+    <!-- SMART LINK SHARE ON GENERATED QR PAGE -->
+    <div class="enterprise-card rounded-3xl p-4 shadow-sm space-y-2">
+      <button onclick="shareSmartVariableLink()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl shadow-sm active:scale-95 transition flex items-center justify-center gap-2">
+        <i data-lucide="share-2" class="w-4 h-4"></i>
+        <span>Share Smart Payment Link & QR</span>
+      </button>
+      <p class="text-[10px] text-slate-400 text-center">Sends locked 24-hr payment link with embedded QR image.</p>
     </div>
 
     <!-- ACTION CONTROLS -->
@@ -821,11 +832,9 @@
       const isPayerLink = p.has('pay') || p.has('am') || p.has('loan');
 
       if (isPayerLink) {
-        // Payer links bypass the merchant terms agreement and activate instant lock
         const expiryTime = new Date().getTime() + (24 * 60 * 60 * 1000);
         localStorage.setItem('cm_payer_lock_until', expiryTime.toString());
       } else {
-        // Check 24hr memory lock
         const lockUntil = parseInt(localStorage.getItem('cm_payer_lock_until') || '0', 10);
         const now = new Date().getTime();
         if (now < lockUntil) {
@@ -839,10 +848,8 @@
           return;
         }
 
-        // Check if Merchant has agreed to Terms and Conditions previously
         const hasAgreedTerms = localStorage.getItem('cm_terms_agreed') === 'true';
         if (!hasAgreedTerms) {
-          // Show Terms and Conditions Modal on first boot
           document.getElementById('termsAgreementModal').classList.remove('hidden');
         }
       }
@@ -859,7 +866,6 @@
       }, 1200);
     });
 
-    // Terms & Conditions Actions
     function handleTermsAgree() {
       localStorage.setItem('cm_terms_agreed', 'true');
       document.getElementById('termsAgreementModal').classList.add('hidden');
@@ -869,7 +875,6 @@
       document.getElementById('termsAgreementModal').classList.add('hidden');
       document.getElementById('disagreeLockedScreen').classList.remove('hidden');
       
-      // Generate Developer Tip QR on the locked screen
       const devTipUri = `upi://pay?pa=mobileandmoreshop@axl&pn=CollectMasterDeveloper&am=50&cu=INR&tn=DeveloperSupportTip`;
       new QRious({
         element: document.getElementById('devTipQrCanvas'),
@@ -918,7 +923,6 @@
       document.getElementById('appInstallModal').classList.add('hidden');
     }
 
-    // MERCHANT GALLERY QR DECODER (100% Reliable without Camera API blocks)
     function decodeQrFromFile(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -1273,6 +1277,7 @@
       launchUpiAppIntent('generic', activeUpiUri);
     }
 
+    // SMART LINK SHARE FUNCTIONALITY RESTORED ON GENERATED QR PAGE
     async function shareSmartVariableLink() {
       const company = document.getElementById('companyName').value.trim();
       const amount = document.getElementById('amount').value.trim();
