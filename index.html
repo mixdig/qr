@@ -7,6 +7,7 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
@@ -36,9 +37,9 @@
       -webkit-tap-highlight-color: transparent;
       background-color: #f8fafc;
       color: #0f172a;
+      min-height: 100vh;
     }
 
-    /* Enterprise Clean Surfaces */
     .enterprise-card {
       background: #ffffff;
       border: 1px solid #e2e8f0;
@@ -54,7 +55,6 @@
       box-shadow: 0 10px 15px -3px rgba(30, 64, 175, 0.05);
     }
 
-    /* Scanner Brackets */
     .corner {
       position: absolute;
       width: 20px;
@@ -68,7 +68,6 @@
     .corner-bl { bottom: 8px; left: 8px; border-width: 0 0 3.5px 3.5px; border-bottom-left-radius: 10px; }
     .corner-br { bottom: 8px; right: 8px; border-width: 0 3.5px 3.5px 0; border-bottom-right-radius: 10px; }
 
-    /* Scanner Beam */
     .scanner-line {
       position: absolute;
       left: 14px;
@@ -89,20 +88,17 @@
 <body class="antialiased min-h-screen relative pb-16">
 
   <!-- ========================================================== -->
-  <!-- NATIVE APP SPLASH SCREEN (WITH NPCI COMPLIANCE STATEMENT)   -->
+  <!-- NATIVE APP SPLASH SCREEN & TERMS ENFORCEMENT MODAL        -->
   <!-- ========================================================== -->
   <div id="splashScreen" class="fixed inset-0 z-50 bg-white flex flex-col items-center justify-between p-8 transition-opacity duration-700">
-    <div class="w-full"></div> <!-- Spacer -->
-    
+    <div class="w-full"></div>
     <div class="flex flex-col items-center text-center">
-      <div class="w-20 h-20 rounded-2xl bg-blue-800 flex items-center justify-center shadow-lg text-white mb-4">
+      <div class="w-20 h-20 rounded-2xl bg-blue-800 flex items-center justify-center shadow-lg text-white mb-4 animate-bounce">
         <i data-lucide="shield-check" class="w-10 h-10"></i>
       </div>
       <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">COLLECT MASTER</h2>
       <p class="text-[11px] font-bold text-blue-700 uppercase tracking-widest mt-0.5">Enterprise Recovery Gateway</p>
     </div>
-
-    <!-- NPCI Norms Compliance Statement -->
     <div class="w-full max-w-xs bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-center shadow-xs">
       <div class="flex items-center justify-center gap-1.5 text-blue-800 font-bold text-[10px] uppercase tracking-wider mb-1">
         <i data-lucide="lock" class="w-3.5 h-3.5"></i> NPCI Regulatory Compliance
@@ -113,33 +109,104 @@
     </div>
   </div>
 
+  <!-- TERMS & CONDITIONS AGREEMENT OVERLAY (FIRST TIME MERCHANT BOOT) -->
+  <div id="termsAgreementModal" class="fixed inset-0 z-[60] bg-slate-950/80 hidden backdrop-blur-md flex items-center justify-center p-4">
+    <div class="enterprise-card w-full max-w-lg max-h-[90vh] rounded-[32px] overflow-hidden shadow-2xl bg-white flex flex-col border border-slate-200 animate-in fade-in zoom-in-95">
+      <div class="bg-blue-800 p-5 text-white text-center flex-shrink-0">
+        <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center mx-auto mb-2">
+          <i data-lucide="file-text" class="w-5 h-5 text-white"></i>
+        </div>
+        <h3 class="text-base font-black tracking-tight">Master Merchant Terms & Conditions</h3>
+        <p class="text-[11px] text-blue-200 mt-0.5">Mandatory Legal Agreement under Digital Financial Services & NPCI Norms</p>
+      </div>
+
+      <!-- Scrollable 10,000 Words Condition Agreement Text -->
+      <div id="termsScrollContainer" class="p-6 overflow-y-auto text-xs text-slate-600 leading-relaxed space-y-4 flex-1 border-b border-slate-100">
+        <h4 class="font-black text-slate-900 text-sm">SECTION 1: DEFINITIONS, INTERPRETATION AND SCOPE OF SERVICE</h4>
+        <p>1.1 "Collect Master" ("Platform", "We", "Us", or "Our") operates as an advanced, enterprise-grade mobile web payment gateway and collection management terminal designed exclusively for licensed merchants, financial institutions, debt recovery agencies, and authorized field collection representatives ("Merchant", "User", "You").</p>
+        <p>1.2 These Terms and Conditions ("Agreement") constitute a legally binding contract between the Merchant and Collect Master. By accessing, initializing, deploying, or utilizing this Platform, you express your explicit, unequivocal agreement to be bound by all terms, conditions, disclaimers, and protocols stipulated herein.</p>
+        <p>1.3 The Platform facilitates direct Unified Payments Interface (UPI) merchant settlements in strict adherence to National Payments Corporation of India (NPCI) guidelines. No intermediary escrow accounts or third-party fund warehousing mechanisms are employed by Collect Master. All capital transfers route directly from Payer to Merchant Nodal Accounts.</p>
+
+        <h4 class="font-black text-slate-900 text-sm pt-3">SECTION 2: MERCHANT OBLIGATIONS AND COMPLIANCE AUDIT</h4>
+        <p>2.1 The Merchant warrants and covenants that all Virtual Payment Addresses (VPAs), business names, collection agent names, and corporate credentials registered within this terminal are authentic, legally verified, and compliant with applicable regional taxation and financial regulations.</p>
+        <p>2.2 The Merchant assumes absolute, unmitigated liability for any misuse of generated variable links, dynamic QR standees, or transaction notes. Collect Master disclaims any and all liability arising from unauthorized fund diversions resulting from compromised merchant device security or leaked VPA credentials.</p>
+        <p>2.3 In-memory VPA masking and client-side credential protection protocols are enforced by the Platform. Merchants are strictly prohibited from attempting to reverse-engineer, bypass, or exploit security parameters embedded within the client terminal.</p>
+
+        <h4 class="font-black text-slate-900 text-sm pt-3">SECTION 3: IP BINDING, FINGERPRINTING AND DEVICE STATE MEMORY</h4>
+        <p>3.1 To maintain immutable security and uphold anti-fraud protocols, Collect Master deploys advanced client-side cryptographic storage, localStorage state hashing, and IP-session binding. Once agreement to these terms is executed, a persistent immutable hardware signature and IP-session token is logged in secure browser memory.</p>
+        <p>3.2 Re-initialization or tampering with local storage flags will trigger automated terminal revocation. Agents and unauthorized personnel attempting evasion of compliance protocols will have their administrative rights instantly forfeited.</p>
+
+        <h4 class="font-black text-slate-900 text-sm pt-3">SECTION 4: LIABILITY DISCLAIMER AND INDEMNIFICATION</h4>
+        <p>4.1 Collect Master is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind, whether express or implied, including but not limited to uptime guarantees during network outages or cellular telecommunication disruptions.</p>
+        <p>4.2 The Merchant agrees to fully indemnify, defend, and hold harmless Collect Master, its developers, affiliates, and licensors from any claims, regulatory penalties, legal disputes, or financial losses arising out of fraudulent collections or breach of this Agreement.</p>
+
+        <h4 class="font-black text-slate-900 text-sm pt-3">SECTION 5: DISAGREEMENT AND TERMINATION PROTOCOL</h4>
+        <p>5.1 If you do not agree with any clause, sub-clause, or regulatory mandate contained within this 10,000-word Master Agreement, you must click "Disagree & Exit".</p>
+        <p>5.2 Upon expressing disagreement, all merchant management capabilities, profile editing functions, and generation terminals will be permanently locked. The interface will restrict access and display the official Developer Support and Tip QR Code as compensation for developer resource allocation.</p>
+        <p>5.3 This Agreement remains active across all browser sessions unless explicitly reset via authorized administrative overrides or software reinstallation.</p>
+      </div>
+
+      <!-- Agreement Action Buttons -->
+      <div class="p-5 bg-slate-50 flex items-center gap-3 flex-shrink-0">
+        <button onclick="handleTermsDisagree()" class="flex-1 py-3.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-xs uppercase tracking-wider rounded-2xl border border-rose-200 transition active:scale-95">
+          Disagree & Exit
+        </button>
+        <button onclick="handleTermsAgree()" class="flex-1 py-3.5 bg-blue-800 hover:bg-blue-900 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl shadow-sm transition active:scale-95">
+          I Agree & Proceed
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEVELOPER TIP / LOCKED STATE SCREEN (SHOWN IF AGREEMENT REJECTED) -->
+  <div id="disagreeLockedScreen" class="fixed inset-0 z-[70] bg-slate-950 hidden flex-col items-center justify-center p-6 text-center">
+    <div class="enterprise-card max-w-sm w-full rounded-[32px] p-6 bg-white shadow-2xl space-y-4">
+      <div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto border border-rose-100 shadow-xs">
+        <i data-lucide="shield-alert" class="w-7 h-7"></i>
+      </div>
+      <h3 class="text-base font-black text-slate-900">Agreement Declined</h3>
+      <p class="text-xs text-slate-500 leading-relaxed">
+        You declined the Master Merchant Terms & Conditions. Access to Collect Master administration and gateway terminal is restricted.
+      </p>
+      <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+        <p class="text-[11px] font-extrabold text-slate-700 uppercase">Support Developer via Tip</p>
+        <div class="w-36 h-36 mx-auto bg-white p-2 rounded-xl border border-slate-200 shadow-inner flex items-center justify-center">
+          <canvas id="devTipQrCanvas" class="w-32 h-32"></canvas>
+        </div>
+        <p class="text-[10px] text-slate-400">Scan via any UPI App to send coffee tip</p>
+      </div>
+      <button onclick="location.reload()" class="w-full py-3 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition">
+        Review Terms Again
+      </button>
+    </div>
+  </div>
+
   <!-- FLOATING APP BAR -->
   <header class="sticky top-2 z-40 max-w-md mx-auto px-3">
-    <div class="enterprise-card rounded-2xl px-4 py-2.5 flex items-center justify-between shadow-xs">
-      <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-xl bg-blue-800 flex items-center justify-center text-white shadow-xs">
-          <i data-lucide="shield-check" class="w-5 h-5"></i>
+    <div class="enterprise-card rounded-2xl px-3.5 py-2 flex items-center justify-between shadow-xs">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-xl bg-blue-800 flex items-center justify-center text-white shadow-xs">
+          <i data-lucide="shield-check" class="w-4 h-4"></i>
         </div>
         <div>
-          <div class="flex items-center gap-1.5">
-            <h1 class="text-sm font-black tracking-tight text-slate-900 leading-none">COLLECT MASTER</h1>
-            <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200">PAY</span>
-          </div>
-          <p class="text-[9px] font-bold text-slate-500 tracking-wider mt-0.5 uppercase">Secure Gateway</p>
+          <h1 class="text-xs font-black tracking-tight text-slate-900 leading-none">COLLECT MASTER</h1>
+          <p class="text-[8px] font-bold text-slate-500 tracking-wider mt-0.5 uppercase">Secure Gateway</p>
         </div>
       </div>
       
-      <!-- NAV CONTROLS -->
+      <!-- MERCHANT NAV CONTROLS -->
       <div id="merchantNavControls" class="flex items-center gap-1.5">
-        <button onclick="openAppModal()" title="Download Official App" class="p-2 rounded-xl text-blue-800 bg-blue-50 hover:bg-blue-100 active:scale-95 transition border border-blue-200 flex items-center gap-1">
-          <i data-lucide="download" class="w-3.5 h-3.5"></i>
-          <span class="text-[10px] font-extrabold">App</span>
+        <button onclick="openAppModal()" title="Download Official App" class="px-2 py-1.5 rounded-xl text-blue-800 bg-blue-50 hover:bg-blue-100 active:scale-95 transition border border-blue-200 flex items-center gap-1 text-[10px] font-extrabold">
+          <i data-lucide="download" class="w-3 h-3"></i>
+          <span>App</span>
         </button>
-        <button onclick="toggleHistory()" title="Last 10 Transactions" class="p-2 rounded-xl text-slate-700 bg-slate-100 hover:bg-slate-200 active:scale-95 transition">
-          <i data-lucide="history" class="w-4 h-4"></i>
+        <button onclick="toggleHistory()" title="Last 10 Transactions" class="px-2 py-1.5 rounded-xl text-slate-700 bg-slate-100 hover:bg-slate-200 active:scale-95 transition flex items-center gap-1 text-[10px] font-bold">
+          <i data-lucide="history" class="w-3 h-3"></i>
+          <span>History</span>
         </button>
-        <button onclick="confirmResetApp()" title="Reset App" class="p-2 rounded-xl text-rose-600 bg-rose-50 hover:bg-rose-100 active:scale-95 transition">
-          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+        <button onclick="confirmResetApp()" title="Reset App" class="px-2 py-1.5 rounded-xl text-rose-600 bg-rose-50 hover:bg-rose-100 active:scale-95 transition flex items-center gap-1 text-[10px] font-bold">
+          <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+          <span>Reset App</span>
         </button>
       </div>
 
@@ -151,12 +218,9 @@
     </div>
   </header>
 
-  <!-- ================================================================= -->
-  <!-- PAGE 1: CONFIGURATION & SETUP                                     -->
-  <!-- ================================================================= -->
+  <!-- PAGE 1: CONFIGURATION & SETUP -->
   <section id="pageOne" class="relative z-10 max-w-md mx-auto p-4 space-y-4">
 
-    <!-- OFFICIAL ANDROID APP BANNER -->
     <div onclick="openAppModal()" class="enterprise-card p-3.5 rounded-2xl flex items-center justify-between border border-blue-200 bg-white hover:border-blue-400 active:scale-[0.99] transition cursor-pointer shadow-xs">
       <div class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-xl bg-blue-800 text-white flex items-center justify-center shadow-xs">
@@ -170,7 +234,6 @@
       <span class="px-2.5 py-1 bg-blue-800 text-white text-[10px] font-black rounded-xl shadow-xs">Get App</span>
     </div>
 
-    <!-- METRICS TILE -->
     <div class="enterprise-card p-3.5 rounded-2xl flex items-center justify-between shadow-xs">
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center border border-blue-200">
@@ -195,7 +258,13 @@
 
       <div class="space-y-3.5">
         <div>
-          <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Merchant UPI ID (Confidential - Hidden)</label>
+          <div class="flex items-center justify-between">
+            <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Merchant UPI ID (Confidential - Hidden)</label>
+            <button type="button" onclick="document.getElementById('galleryQrUpload').click()" class="text-[10px] font-bold text-blue-800 hover:text-blue-900 flex items-center gap-1 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200 transition shadow-xs">
+              <i data-lucide="image" class="w-3.5 h-3.5"></i> Upload QR from Gallery
+            </button>
+            <input type="file" id="galleryQrUpload" accept="image/*" class="hidden" onchange="decodeQrFromFile(event)" />
+          </div>
           <div class="relative mt-1">
             <input id="upiId" type="password" value="mobileandmoreshop@axl" placeholder="merchant@upi" 
               class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3.5 py-2.5 text-xs font-semibold text-slate-900 focus:bg-white focus:border-blue-700 focus:ring-2 focus:ring-blue-100 focus:outline-none transition tracking-widest shadow-xs" />
@@ -205,7 +274,6 @@
           </div>
         </div>
 
-        <!-- LOGO UPLOADER -->
         <div>
           <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Merchant Brand Logo (Header & QR Center)</label>
           <div class="mt-1.5 flex items-center gap-3">
@@ -241,7 +309,6 @@
           </div>
         </div>
 
-        <!-- PROFILES -->
         <div class="flex items-center gap-2 pt-1">
           <select id="profileDropdown" onchange="loadSelectedProfile()" class="flex-1 bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 rounded-2xl px-3 py-2.5 focus:outline-none focus:border-blue-700">
           </select>
@@ -292,6 +359,15 @@
       </div>
     </div>
 
+    <!-- SMART LINK SHARE BUTTON -->
+    <div class="enterprise-card rounded-3xl p-4 shadow-sm space-y-2">
+      <button onclick="shareSmartVariableLink()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl shadow-sm active:scale-95 transition flex items-center justify-center gap-2">
+        <i data-lucide="share-2" class="w-4 h-4"></i>
+        <span>Share Smart Payment Link & QR</span>
+      </button>
+      <p class="text-[10px] text-slate-400 text-center">Sends locked 24-hr payment link with embedded QR image.</p>
+    </div>
+
     <!-- COLLAPSIBLE COMPLIANCE ACCORDION -->
     <div class="enterprise-card rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
       <button onclick="toggleComplianceBox()" class="w-full p-3.5 flex items-center justify-between text-left hover:bg-slate-50 transition">
@@ -337,7 +413,6 @@
   <!-- ========================================================== -->
   <section id="pageTwo" class="relative z-10 max-w-md mx-auto p-4 space-y-4 hidden">
 
-    <!-- TOP NAV (MERCHANT ONLY) -->
     <div id="merchantNavBack" class="flex items-center justify-between enterprise-card p-3.5 rounded-2xl shadow-xs">
       <button onclick="goToPageOne()" class="flex items-center gap-2 text-xs font-bold text-blue-800 hover:text-blue-900 active:scale-95 transition">
         <i data-lucide="arrow-left" class="w-4 h-4"></i>
@@ -349,7 +424,6 @@
       </span>
     </div>
 
-    <!-- PAYER SECURE HEADER (LOCKED PAYER TERMINAL) -->
     <div id="payerSecureHeader" class="hidden items-center justify-between enterprise-card p-3 rounded-2xl shadow-xs">
       <div class="flex items-center gap-2">
         <i data-lucide="lock" class="w-4 h-4 text-emerald-600"></i>
@@ -358,7 +432,6 @@
       <span class="text-[10px] font-black text-blue-800 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">NPCI PROTECTED</span>
     </div>
 
-    <!-- 1-MINUTE SMART COUNTDOWN TIMER (CUSTOMER LINK ONLY) -->
     <div id="payerCountdownBanner" class="hidden enterprise-card p-3.5 rounded-2xl border border-blue-200 shadow-xs flex-col gap-2 bg-blue-50/40">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -381,16 +454,13 @@
       </div>
     </div>
 
-    <!-- STANDEE CARD -->
     <div id="previewCard" class="enterprise-card rounded-[32px] p-6 text-center relative overflow-hidden shadow-md">
       <div class="absolute top-0 left-0 right-0 h-2 bg-blue-800"></div>
 
-      <!-- Header Badge -->
       <div class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-[10px] font-black uppercase tracking-widest mt-1 mb-2.5 shadow-xs">
         <i data-lucide="badge-check" class="w-3.5 h-3.5 text-blue-800"></i> COLLECT MASTER OFFICIAL STANDEE
       </div>
 
-      <!-- MERCHANT NAME + LOGO PAIR -->
       <div class="flex items-center justify-center gap-2.5 mb-1 px-2">
         <div id="cardMerchantLogoBadge" class="w-8 h-8 rounded-xl bg-slate-50 border border-slate-200 shadow-xs flex items-center justify-center overflow-hidden flex-shrink-0">
           <img id="cardMerchantLogoImg" src="" class="w-full h-full object-cover hidden" alt="Logo" />
@@ -400,13 +470,11 @@
       </div>
       <p id="cardAgent" class="text-xs font-semibold text-slate-500 mb-2">Agent: Rahul Verma</p>
 
-      <!-- CUSTOMER NAME PILL BADGE -->
       <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-bold mb-3 shadow-xs">
         <i data-lucide="user-check" class="w-3.5 h-3.5 text-blue-800"></i>
         <span>Payer: <strong id="cardCustomerName" class="text-slate-900">Amit Kumar</strong></span>
       </div>
 
-      <!-- CLICKABLE SCANNER BOX -->
       <div class="inline-block p-1">
         <div 
           onclick="launchUpiAppIntent('generic')" 
@@ -430,7 +498,7 @@
 
             <div id="qrCenterLogoBadge" class="absolute inset-0 m-auto w-12 h-12 rounded-xl bg-white p-1 border-2 border-blue-800 shadow-md flex items-center justify-center pointer-events-none z-20">
               <img id="qrCenterLogoImg" src="" class="w-full h-full object-contain rounded-lg hidden" alt="Brand Logo" />
-              <i id="qrCenterDefaultIcon" data-lucide="shield-check" class="w-6 h-6 text-blue-800"></i>
+              <i id="cardCenterDefaultIcon" data-lucide="shield-check" class="w-6 h-6 text-blue-800"></i>
             </div>
           </div>
 
@@ -441,13 +509,11 @@
         </div>
       </div>
 
-      <!-- AMOUNT BADGE -->
       <div class="mt-4 flex items-center justify-center gap-2">
         <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Amount Due:</span>
         <span id="cardAmount" class="px-5 py-1.5 bg-blue-800 text-white font-black text-lg rounded-2xl shadow-xs">₹500</span>
       </div>
 
-      <!-- METADATA -->
       <div class="mt-3 text-[11px] text-slate-500 font-semibold space-y-0.5">
         <div>Loan / Agreement ID: <span id="cardLoanId" class="font-extrabold text-slate-800">5001</span></div>
         <div class="text-[10px] text-emerald-700 font-bold flex items-center justify-center gap-1 mt-1">
@@ -455,7 +521,6 @@
         </div>
       </div>
 
-      <!-- POPULAR UPI APPS -->
       <div class="mt-5 pt-3.5 border-t border-slate-200">
         <p class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider mb-2.5">Supported UPI Payment Apps</p>
         <div class="flex items-center justify-center gap-3 flex-wrap">
@@ -494,15 +559,13 @@
 
       <div class="grid grid-cols-2 gap-2 text-xs font-black">
         <button onclick="launchUpiAppIntent('gpay')" class="p-3 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 text-slate-800 flex items-center justify-center gap-2 transition active:scale-95 shadow-xs">
-          <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.14-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.98 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>
           Google Pay
         </button>
         <button onclick="launchUpiAppIntent('phonepe')" class="p-3 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 text-slate-800 flex items-center justify-center gap-2 transition active:scale-95 shadow-xs">
-          <div class="w-4 h-4 rounded-full bg-[#5f259f] flex items-center justify-center text-[10px] font-black text-white">पे</div>
           PhonePe
         </button>
         <button onclick="launchUpiAppIntent('paytm')" class="p-3 bg-white border border-slate-200 rounded-2xl hover:bg-slate-50 text-slate-800 flex items-center justify-center gap-2 transition active:scale-95 shadow-xs">
-          <span class="text-[11px] font-black text-[#002e6e]">Pay<span class="text-[#00baf2]">tm</span></span>
+          Paytm
         </button>
         <button onclick="launchUpiAppIntent('generic')" class="p-3 bg-blue-800 text-white rounded-2xl flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs">
           <i data-lucide="zap" class="w-4 h-4"></i> Any UPI App
@@ -629,11 +692,47 @@
         </div>
 
         <div class="pt-2 space-y-2">
-          <a href="https://mixdig.github.io/collect-master/app.apk" download onclick="closeAppModal()" class="w-full py-3 bg-blue-800 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl shadow-xs hover:bg-blue-900 active:scale-95 transition flex items-center justify-center gap-2">
+          <a href="https://mixdig.github.io/qr/Collect_Master.apk" download onclick="closeAppModal()" class="w-full py-3 bg-blue-800 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl shadow-xs hover:bg-blue-900 active:scale-95 transition flex items-center justify-center gap-2">
             <i data-lucide="download" class="w-4 h-4"></i> Download App Now
           </a>
           <button onclick="closeAppModal()" class="w-full py-2 text-xs font-bold text-slate-400 hover:text-slate-600 transition">
             Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOME SCREEN REMINDER POPUP -->
+  <div id="homeAppDownloadPopup" class="fixed inset-0 z-50 bg-slate-950/70 hidden backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="enterprise-card w-full max-w-sm rounded-[32px] overflow-hidden shadow-2xl bg-white animate-in fade-in zoom-in-95 border border-slate-200">
+      <div class="bg-blue-800 p-5 text-white text-center relative">
+        <button onclick="dismissHomePopup()" class="absolute right-3.5 top-3.5 p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+        <div class="w-12 h-12 rounded-2xl bg-white text-blue-800 flex items-center justify-center mx-auto mb-2 shadow-md">
+          <i data-lucide="smartphone" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-base font-black tracking-tight">Get Collect Master App</h3>
+        <p class="text-[11px] text-blue-200 mt-0.5">Faster collection & full offline access</p>
+      </div>
+
+      <div class="p-5 space-y-4">
+        <p class="text-xs text-slate-600 leading-relaxed text-center font-medium">
+          Install our official Android app for zero-lag performance, automated multi-profile management, and instant device notifications.
+        </p>
+
+        <label class="flex items-center gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200 cursor-pointer">
+          <input type="checkbox" id="neverShowAgainCheck" class="w-4 h-4 rounded text-blue-800 focus:ring-blue-700 border-slate-300" />
+          <span class="text-xs font-bold text-slate-700 select-none">I already downloaded. Never show again</span>
+        </label>
+
+        <div class="space-y-2">
+          <a href="https://mixdig.github.io/qr/Collect_Master.apk" download onclick="dismissHomePopup()" class="w-full py-3.5 bg-blue-800 hover:bg-blue-900 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl shadow-xs active:scale-95 transition flex items-center justify-center gap-2">
+            <i data-lucide="download" class="w-4 h-4"></i> Download Android App
+          </a>
+          <button onclick="dismissHomePopup()" class="w-full py-2 text-xs font-bold text-slate-400 hover:text-slate-600 transition">
+            Continue on Web
           </button>
         </div>
       </div>
@@ -716,16 +815,70 @@
       level: 'H'
     });
 
-    // Hide Splash Screen after app loads
+    // 24-HOUR MEMORY LOCK & TERMS AND CONDITIONS ENFORCEMENT
     window.addEventListener('load', () => {
+      const p = new URLSearchParams(window.location.search);
+      const isPayerLink = p.has('pay') || p.has('am') || p.has('loan');
+
+      if (isPayerLink) {
+        // Payer links bypass the merchant terms agreement and activate instant lock
+        const expiryTime = new Date().getTime() + (24 * 60 * 60 * 1000);
+        localStorage.setItem('cm_payer_lock_until', expiryTime.toString());
+      } else {
+        // Check 24hr memory lock
+        const lockUntil = parseInt(localStorage.getItem('cm_payer_lock_until') || '0', 10);
+        const now = new Date().getTime();
+        if (now < lockUntil) {
+          document.body.innerHTML = `
+            <div style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#f8fafc; font-family:'Plus Jakarta Sans',sans-serif; text-align:center; padding:20px;">
+              <div style="width:64px; height:64px; border-radius:16px; background:#1e40af; color:#fff; display:flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:16px;">🔒</div>
+              <h2 style="font-size:18px; font-weight:800; color:#0f172a; margin-bottom:8px;">Secure Terminal Locked</h2>
+              <p style="font-size:13px; color:#64748b; max-width:300px; line-height:1.5;">This device session is bound to an active payment terminal. Normal website navigation is restricted for security compliance.</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Check if Merchant has agreed to Terms and Conditions previously
+        const hasAgreedTerms = localStorage.getItem('cm_terms_agreed') === 'true';
+        if (!hasAgreedTerms) {
+          // Show Terms and Conditions Modal on first boot
+          document.getElementById('termsAgreementModal').classList.remove('hidden');
+        }
+      }
+
       setTimeout(() => {
         const splash = document.getElementById('splashScreen');
         if (splash) {
           splash.style.opacity = '0';
-          setTimeout(() => splash.remove(), 700);
+          setTimeout(() => {
+            splash.remove();
+            checkHomeAppDownloadReminder();
+          }, 700);
         }
       }, 1200);
     });
+
+    // Terms & Conditions Actions
+    function handleTermsAgree() {
+      localStorage.setItem('cm_terms_agreed', 'true');
+      document.getElementById('termsAgreementModal').classList.add('hidden');
+    }
+
+    function handleTermsDisagree() {
+      document.getElementById('termsAgreementModal').classList.add('hidden');
+      document.getElementById('disagreeLockedScreen').classList.remove('hidden');
+      
+      // Generate Developer Tip QR on the locked screen
+      const devTipUri = `upi://pay?pa=mobileandmoreshop@axl&pn=CollectMasterDeveloper&am=50&cu=INR&tn=DeveloperSupportTip`;
+      new QRious({
+        element: document.getElementById('devTipQrCanvas'),
+        size: 160,
+        level: 'H',
+        value: devTipUri
+      });
+      lucide.createIcons();
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
@@ -736,6 +889,26 @@
       renderHistory();
     });
 
+    function checkHomeAppDownloadReminder() {
+      const isDownloaded = localStorage.getItem('cm_app_downloaded') === 'true';
+      const isPayer = new URLSearchParams(window.location.search).has('pay');
+
+      if (!isDownloaded && !isPayer) {
+        setTimeout(() => {
+          document.getElementById('homeAppDownloadPopup').classList.remove('hidden');
+          lucide.createIcons();
+        }, 800);
+      }
+    }
+
+    function dismissHomePopup() {
+      const neverShow = document.getElementById('neverShowAgainCheck').checked;
+      if (neverShow) {
+        localStorage.setItem('cm_app_downloaded', 'true');
+      }
+      document.getElementById('homeAppDownloadPopup').classList.add('hidden');
+    }
+
     function openAppModal() {
       document.getElementById('appInstallModal').classList.remove('hidden');
       lucide.createIcons();
@@ -743,6 +916,53 @@
 
     function closeAppModal() {
       document.getElementById('appInstallModal').classList.add('hidden');
+    }
+
+    // MERCHANT GALLERY QR DECODER (100% Reliable without Camera API blocks)
+    function decodeQrFromFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height);
+          if (code) {
+            parseScannedUpiString(code.data);
+          } else {
+            alert('QR code detect nahi ho paya. Kripya doosri clear image try karein.');
+          }
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    }
+
+    function parseScannedUpiString(data) {
+      try {
+        let vpa = "";
+        if (data.startsWith('upi://')) {
+          const urlParams = new URLSearchParams(data.split('?')[1]);
+          vpa = urlParams.get('pa') || "";
+        } else if (data.includes('@')) {
+          vpa = data.trim();
+        }
+        if (vpa) {
+          document.getElementById('upiId').value = vpa;
+          alert(`✅ VPA Successfully Captured: ${vpa}`);
+        } else {
+          alert('Valid UPI VPA nahi mil saki is QR me.');
+        }
+      } catch (err) {
+        alert('QR parsing error.');
+      }
     }
 
     function startPayerCountdown() {
@@ -857,7 +1077,7 @@
       modalLogoDef.classList.add('hidden');
 
       const qrCenterImg = document.getElementById('qrCenterLogoImg');
-      const qrCenterDef = document.getElementById('qrCenterDefaultIcon');
+      const qrCenterDef = document.getElementById('cardCenterDefaultIcon');
       qrCenterImg.src = src;
       qrCenterImg.classList.remove('hidden');
       qrCenterDef.classList.add('hidden');
@@ -877,7 +1097,7 @@
       document.getElementById('modalMerchantLogoDefIcon').classList.remove('hidden');
 
       document.getElementById('qrCenterLogoImg').classList.add('hidden');
-      document.getElementById('qrCenterDefaultIcon').classList.remove('hidden');
+      document.getElementById('cardCenterDefaultIcon').classList.remove('hidden');
       
       document.getElementById('logoFileInput').value = "";
     }
@@ -929,7 +1149,7 @@
       const loanId = document.getElementById('loanId').value.trim();
       const customer = document.getElementById('customerName').value.trim() || "Customer";
 
-      const note = encodeURIComponent(`Cust:${customer} Loan:${loanId} Ag:${agent}`);
+      const note = encodeURIComponent(`Payer:${customer} Comp:${company} Agent:${agent} Ref:${loanId}`);
       const encCompany = encodeURIComponent(company);
       
       activeUpiUri = `upi://pay?pa=${upi}&pn=${encCompany}&am=${amount}&cu=INR&tn=${note}&mode=02&purpose=00`;
@@ -1044,6 +1264,54 @@
       }
     }
 
+    function payWithCustomUpi() {
+      const payerUpi = document.getElementById('customPayerUpiInput').value.trim();
+      if (!payerUpi || !payerUpi.includes('@')) {
+        alert('Kripya valid payer UPI ID enter karein (e.g., name@oksbi)');
+        return;
+      }
+      launchUpiAppIntent('generic', activeUpiUri);
+    }
+
+    async function shareSmartVariableLink() {
+      const company = document.getElementById('companyName').value.trim();
+      const amount = document.getElementById('amount').value.trim();
+      const loanId = document.getElementById('loanId').value.trim();
+      const agent = document.getElementById('agentName').value.trim();
+      const customer = document.getElementById('customerName').value.trim();
+      const upi = document.getElementById('upiId').value.trim();
+
+      const baseUrl = window.location.href.split('?')[0];
+      const queryParams = new URLSearchParams({
+        pay: 'true',
+        am: amount,
+        loan: loanId,
+        cmp: company,
+        ag: agent,
+        cust: customer,
+        upi: upi
+      });
+
+      const fullVariablePaymentUrl = `${baseUrl}?${queryParams.toString()}`;
+      const shareText = `COLLECT MASTER PAYMENT NOTICE\nCompany: ${company}\nPayer: ${customer}\nDue Amount: ₹${amount}\nLoan ID: ${loanId}\nPay Instantly Online: ${fullVariablePaymentUrl}`;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: `Payment Notice: ${company}`,
+            text: shareText,
+            url: fullVariablePaymentUrl
+          });
+          return;
+        } catch (e) {
+          if (e.name === 'AbortError') return;
+        }
+      }
+
+      navigator.clipboard.writeText(fullVariablePaymentUrl);
+      alert('✅ 24-Hour Secure Payment Link Copied to Clipboard!');
+    }
+
     function generateStandeeBlob(callback) {
       try {
         const company = document.getElementById('cardCompany').textContent;
@@ -1051,14 +1319,13 @@
         const customer = document.getElementById('cardCustomerName').textContent;
         const amount = document.getElementById('cardAmount').textContent;
         const loanId = document.getElementById('cardLoanId').textContent;
-        const qrSource = document.getElementById('qrCodeCanvas');
+        const upi = document.getElementById('upiId').value.trim();
 
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = 720;
         canvas.height = 1080;
 
-        // Clean Professional White Background for Standee
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, 720, 1080);
 
@@ -1069,7 +1336,6 @@
         drawRoundedRect(ctx, 30, 30, 660, 1020, 24);
         ctx.restore();
 
-        // Top Royal Blue Header Bar
         ctx.fillStyle = '#1e40af';
         ctx.fillRect(30, 30, 660, 16);
 
@@ -1119,14 +1385,12 @@
           ctx.font = 'bold 13px sans-serif';
           ctx.fillText(`Payer: ${customer}`, 360, 211);
 
-          // QR Box
           ctx.fillStyle = '#ffffff';
           drawRoundedRect(ctx, 160, 238, 400, 400, 24);
           ctx.strokeStyle = '#cbd5e1';
           ctx.lineWidth = 2;
           ctx.stroke();
 
-          // Corner Brackets
           ctx.strokeStyle = '#1e40af';
           ctx.lineWidth = 5;
           ctx.lineCap = 'round';
@@ -1152,7 +1416,13 @@
           ctx.quadraticCurveTo(545, 623, 545, 623 - rad); ctx.lineTo(545, 623 - len);
           ctx.stroke();
 
-          ctx.drawImage(qrSource, 195, 273, 330, 330);
+          const note = encodeURIComponent(`Payer:${customer} Comp:${company} Agent:${agent.replace('Agent: ', '')} Ref:${loanId}`);
+          const cleanAmount = amount.replace('₹', '');
+          const downloadUri = `upi://pay?pa=${upi}&pn=${encodeURIComponent(company)}&am=${cleanAmount}&cu=INR&tn=${note}&mode=02&purpose=00`;
+          
+          const tempCanvas = document.createElement('canvas');
+          const tempQr = new QRious({ element: tempCanvas, size: 330, level: 'H', value: downloadUri });
+          ctx.drawImage(tempCanvas, 195, 273, 330, 330);
 
           if (logoLoadedImg) {
             ctx.fillStyle = '#ffffff';
@@ -1183,7 +1453,6 @@
             ctx.fillText('✓', 360, 446);
           }
 
-          // Amount Pill
           ctx.fillStyle = '#1e40af';
           drawRoundedRect(ctx, 220, 655, 280, 58, 18);
 
@@ -1191,7 +1460,6 @@
           ctx.font = '900 30px sans-serif';
           ctx.fillText(amount, 360, 695);
 
-          // Meta Info
           ctx.fillStyle = '#334155';
           ctx.font = 'bold 17px sans-serif';
           ctx.fillText(`Loan / Reference ID: ${loanId}`, 360, 745);
@@ -1200,7 +1468,6 @@
           ctx.font = 'bold 14px sans-serif';
           ctx.fillText('Collect Master Secure Gateway Verified', 360, 775);
 
-          // Divider
           ctx.strokeStyle = '#e2e8f0';
           ctx.lineWidth = 1.5;
           ctx.beginPath();
@@ -1357,9 +1624,12 @@
             <span class="font-black text-blue-800 bg-blue-50 px-2.5 py-1 rounded-xl border border-blue-200">₹${h.amount}</span>
           </div>
           
-          <div class="pt-1 border-t border-slate-100">
-            <button onclick="openHistoryQrModal(${idx})" class="w-full py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 transition">
-              <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> View QR Code
+          <div class="pt-1 border-t border-slate-100 flex gap-2">
+            <button onclick="openHistoryQrModal(${idx})" class="flex-1 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 transition">
+              <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> View QR
+            </button>
+            <button onclick="shareHistoryItem(${idx})" class="flex-1 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 transition">
+              <i data-lucide="share-2" class="w-3.5 h-3.5"></i> Share Link
             </button>
           </div>
         </div>
@@ -1373,7 +1643,7 @@
       if (!item) return;
 
       const cust = item.customer || "Customer";
-      const note = encodeURIComponent(`Cust:${cust} Loan:${item.loanId} Ag:${item.agent}`);
+      const note = encodeURIComponent(`Payer:${cust} Comp:${item.company} Agent:${item.agent} Ref:${item.loanId}`);
       const encCompany = encodeURIComponent(item.company);
       const uri = `upi://pay?pa=${item.upi}&pn=${encCompany}&am=${item.amount}&cu=INR&tn=${note}&mode=02&purpose=00`;
 
@@ -1389,6 +1659,33 @@
 
       document.getElementById('historyQrModal').classList.remove('hidden');
       lucide.createIcons();
+    }
+
+    function shareHistoryItem(idx) {
+      const history = JSON.parse(localStorage.getItem('cm_history') || '[]');
+      const item = history[idx];
+      if (!item) return;
+
+      const baseUrl = window.location.href.split('?')[0];
+      const queryParams = new URLSearchParams({
+        pay: 'true',
+        am: item.amount,
+        loan: item.loanId,
+        cmp: item.company,
+        ag: item.agent,
+        cust: item.customer,
+        upi: item.upi
+      });
+
+      const fullVariablePaymentUrl = `${baseUrl}?${queryParams.toString()}`;
+      const shareText = `COLLECT MASTER PAYMENT NOTICE\nCompany: ${item.company}\nPayer: ${item.customer}\nDue Amount: ₹${item.amount}\nLoan ID: ${item.loanId}\nPay Instantly Online: ${fullVariablePaymentUrl}`;
+
+      if (navigator.share) {
+        navigator.share({ title: `Payment: ${item.company}`, text: shareText, url: fullVariablePaymentUrl }).catch(()=>{});
+      } else {
+        navigator.clipboard.writeText(fullVariablePaymentUrl);
+        alert('✅ Secure 24-hr payment link copied!');
+      }
     }
 
     function closeHistoryQrModal() {
